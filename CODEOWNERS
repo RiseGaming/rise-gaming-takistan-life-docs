@@ -1,0 +1,25 @@
+# Code Owners for Rise Gaming Takistan Life Documentation
+# 
+# This file defines who should be requested for review when changes are made
+# to different parts of the repository.
+#
+# More about code owners: https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners
+
+# Global owners - these users will be requested for review on all changes
+* @pbmorris93 @TlZSp3ctr3 @tomwhite96
+
+# Documentation specific owners
+/docs/ @pbmorris93 @tomwhite96
+
+# Marketing materials
+/docs/marketing/ @pbmorris93 @tomwhite96
+
+# Technical documentation
+/docs/technical/ @pbmorris93 @TlZSp3ctr3 @tomwhite96
+
+# Player guides
+/docs/player-guides/ @pbmorris93 @tomwhite96
+
+# Root level files
+/*.md @pbmorris93 @tomwhite96
+/CLAUDE.md @pbmorris93
