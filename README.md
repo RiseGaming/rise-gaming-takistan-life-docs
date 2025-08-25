@@ -32,3 +32,13 @@ All documentation references the actual Rise Gaming Takistan Life Arma 3 codebas
 - **Features Cataloged**: 28+ with detailed code citations
 
 This documentation serves as both player education and development reference for the live Arma 3 server implementation.
+
+## Contributing
+
+We welcome contributions to improve the documentation! Please read our **[Contributing Guide](CONTRIBUTING.md)** for:
+- Contribution workflow and standards
+- Content guidelines and review process  
+- Documentation formatting requirements
+- Contact information for maintainers
+
+All contributions require review from repository owners and must follow our branch protection rules.
