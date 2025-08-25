@@ -114,7 +114,7 @@ Then create a pull request through GitHub with:
 ### Automated Checks
 - **Branch Protection**: Direct pushes to `main` are blocked
 - **Required Reviews**: All changes require approval from code owners
-- **Code Owners**: @pbmorris93, @TlZSp3ctr3, @tomwhite96
+- **Code Owners**: @pbmorris93, @TIZSp3ctr3, @tomwhite96
 
 ### Review Criteria
 Reviewers will check for:
@@ -205,7 +205,7 @@ Before submitting:
 
 ### Questions or Issues
 - Create an issue on GitHub for documentation problems
-- Tag @pbmorris93, @TlZSp3ctr3, or @tomwhite96 for urgent matters
+- Tag @pbmorris93, @TIZSp3ctr3, or @tomwhite96 for urgent matters
 - Use discussions for general questions
 
 ### Feature Requests
