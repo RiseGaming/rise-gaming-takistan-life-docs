@@ -1117,5 +1117,173 @@
     ],
     "test_steps": ["Save $50 million", "Purchase VIP Pass", "Access VIP shops", "Check increased inventory", "Verify offshore banking access"],
     "confidence": 0.87
+  },
+  {
+    "id": "harvest-organs",
+    "name": "Harvest Human Organs",
+    "category": "crime",
+    "roles": ["civilian", "rebel"],
+    "summary": "Illegally harvest organs from dead players using a knife, then sell them to the organ dealer for high payouts.",
+    "how_to_access": {
+      "triggers": ["Interaction: 'Harvest Organs'"],
+      "preconditions": ["role:civilian OR role:rebel", "target:dead_player", "item:knife >= 1"]
+    },
+    "controls_ui": {
+      "dialogs": [],
+      "notifications": ["playerMessage 'You need a knife to harvest the organs.'", "playerMessage 'You have harvested: ...'", "playerMessage 'You were not able to harvest any organs'"],
+      "keybinds": []
+    },
+    "locations_markers": ["organ_dealer", "organ_dealer2"],
+    "economy_law": {
+      "costs": [{"type": "tool", "amount": 15000, "currency": "$"}],
+      "payouts": [{"activity": "sell harvested organs", "amount": "varies up to $450000"}],
+      "illegality": "illegal",
+      "penalties": ["wanted:organ-possession", "wanted:tampering-with-a-body"]
+    },
+    "persistence": {
+      "scope": "serverDB",
+      "entities": ["players.inventory", "players.warrants"],
+      "save_points": ["onHarvestComplete"]
+    },
+    "networking": {
+      "locality": "client",
+      "remoteExec": ["SVR_saveInventory"]
+    },
+    "dependencies": ["knife", "RISE_fnc_inventoryTransfer"],
+    "config_knobs": [],
+    "strings": [],
+    "code_refs": [
+      {"path": "RiseTakiLife.takistan/core/functions/interaction/fn_harvestOrgans.sqf", "lines": "L1-L72", "sha": "25be7f6", "reason": "Organ harvesting logic and inventory rewards"},
+      {"path": "RiseTakiLife.takistan/core/config/fn_variables.sqf", "lines": "L572-L576", "sha": "25be7f6", "reason": "Interaction binding for Harvest Organs action"},
+      {"path": "RiseTakiLife.takistan/core/config/fn_masterarray.sqf", "lines": "L175-L233", "sha": "25be7f6", "reason": "Knife and organ item definitions with pricing"}
+    ],
+    "test_steps": ["Buy a knife from a civilian shop", "Locate a dead player body", "Use the 'Harvest Organs' interaction", "Verify organ items are added to inventory", "Sell organs at the organ dealer to confirm payouts"],
+    "confidence": 0.78
+  },
+  {
+    "id": "purchase-lottery-ticket",
+    "name": "Purchase Lottery Ticket",
+    "category": "economy",
+    "roles": ["civilian", "rebel", "police", "pmc"],
+    "summary": "Purchase configurable lottery tickets at gas stations for a delayed cash payout based on weighted prize tables.",
+    "how_to_access": {
+      "triggers": ["Interaction: 'Purchase Lottery Ticket'"],
+      "preconditions": ["near:Life_GasStations", "money >= ticket_cost", "NOT:playing_lottery"]
+    },
+    "controls_ui": {
+      "dialogs": ["lotto"],
+      "notifications": ["systemChat 'You bought a lottery ticket! Wait 15 minutes to find out your result'", "systemChat 'Congratulations, you won $X!'", "systemChat 'You don't have enough cash to make this purchase!'"],
+      "keybinds": []
+    },
+    "locations_markers": ["fuelshop1", "fuelshop2", "fuelshop3", "fuelshop4", "fuelshop5", "fuelshop6", "fuelshop7", "fuelshop8", "fuelshop9"],
+    "economy_law": {
+      "costs": [{"type": "ticket", "amount": "100-5000", "currency": "$"}],
+      "payouts": [{"activity": "lottery prize", "amount": "0-$500000 depending on ticket"}],
+      "illegality": "legal",
+      "penalties": []
+    },
+    "persistence": {
+      "scope": "serverDB",
+      "entities": ["players.money"],
+      "save_points": ["onLotteryPurchase", "onLotteryPayout"]
+    },
+    "networking": {
+      "locality": "client",
+      "remoteExec": ["SVR_SaveBankInformation"]
+    },
+    "dependencies": ["CfgSettings.Configuration.Lottery"],
+    "config_knobs": ["CfgSettings.Configuration.Lottery.Tickets"],
+    "strings": [],
+    "code_refs": [
+      {"path": "RiseTakiLife.takistan/core/functions/lottery/fn_getLotteryTicket.sqf", "lines": "L1-L35", "sha": "25be7f6", "reason": "Ticket purchase, payout timer, and reward handling"},
+      {"path": "RiseTakiLife.takistan/core/functions/lottery/fn_refreshLotteryDialog.sqf", "lines": "L1-L68", "sha": "25be7f6", "reason": "Lottery dialog population and button wiring"},
+      {"path": "RiseTakiLife.takistan/core/config/Config.cpp", "lines": "L736-L799", "sha": "25be7f6", "reason": "Lottery ticket definitions and prize tables"}
+    ],
+    "test_steps": ["Go to any gas station clerk", "Use the 'Purchase Lottery Ticket' interaction", "Select a ticket tier and buy", "Wait 15 minutes for the scheduled payout", "Confirm winnings were deposited and playing flag reset"],
+    "confidence": 0.74
+  },
+  {
+    "id": "rob-fuel-station",
+    "name": "Rob Fuel or Farm Store",
+    "category": "crime",
+    "roles": ["civilian", "rebel"],
+    "summary": "Hold up a staffed fuel station, farm stand, or pharmacy to empty the till, triggering alarms and automatic warrants.",
+    "how_to_access": {
+      "triggers": ["Interaction: 'Rob Store'"],
+      "preconditions": ["role:civilian OR role:rebel", "target:Life_RobbableStores", "player:isArmed", "cooldown:10_minutes"]
+    },
+    "controls_ui": {
+      "dialogs": [],
+      "notifications": ["customMessage 'You need a weapon to rob this store!'", "customMessage 'You stole $X from the store!'", "customMessage 'Someone robbed <store>!'"],
+      "keybinds": []
+    },
+    "locations_markers": ["fuelshop1", "fuelshop2", "fuelshop3", "fuelshop4", "fuelshop5", "fuelshop6", "fuelshop7", "fuelshop8", "fuelshop9", "farmers_market_1", "farmers_market_2", "pharmacy", "pharmacy2"],
+    "economy_law": {
+      "costs": [],
+      "payouts": [{"activity": "store till", "amount": "up to current till (default $15000)"}],
+      "illegality": "illegal",
+      "penalties": ["wanted:armed-robbery", "wanted:possession-of-stolen-property"]
+    },
+    "persistence": {
+      "scope": "missionNamespace",
+      "entities": ["stores.lastRobberyTime", "stores.Storemoney", "players.warrants", "players.money"],
+      "save_points": ["onRobberyComplete"]
+    },
+    "networking": {
+      "locality": "client",
+      "remoteExec": ["RISE_fnc_mpAnimation", "rise_fnc_mpSound", "RISE_fnc_playerUpdateWarrants", "SVR_SaveBankInformation"]
+    },
+    "dependencies": ["Life_RobbableStores"],
+    "config_knobs": [],
+    "strings": [],
+    "code_refs": [
+      {"path": "RiseTakiLife.takistan/core/functions/misc/fn_robStore.sqf", "lines": "L7-L48", "sha": "25be7f6", "reason": "Robbery validation, payout, and warrant logic"},
+      {"path": "RiseTakiLife.takistan/core/config/fn_variables.sqf", "lines": "L585-L597", "sha": "25be7f6", "reason": "Interaction binding for robbable stores"},
+      {"path": "RiseTakiLife.takistan/core/config/fn_shops.sqf", "lines": "L24577-L24591", "sha": "25be7f6", "reason": "List of robbable store markers"}
+    ],
+    "test_steps": ["Equip any firearm", "Approach a listed fuel station clerk", "Use the 'Rob Store' interaction", "Confirm cash payout and warrants applied", "Attempt a second robbery within 10 minutes to verify cooldown"],
+    "confidence": 0.76
+  },
+  {
+    "id": "install-bait-car",
+    "name": "Install Bait Car Kit",
+    "category": "law",
+    "roles": ["police"],
+    "summary": "Deploy a bait kit on a patrol vehicle to track occupants and remotely immobilize the engine when suspects steal it.",
+    "how_to_access": {
+      "triggers": ["Inventory Use: 'Bait Car Kit'", "Key: '4' (opens Bait Car Controls)"],
+      "preconditions": ["role:police", "item:bait >= 1", "player:in_vehicle", "no-active-bait-kit"]
+    },
+    "controls_ui": {
+      "dialogs": ["bait_car_dialog"],
+      "notifications": ["systemChat 'Bait kit installed!'", "systemChat 'Someone got in your bait car!'", "systemChat 'You activated the immobiliser!'"],
+      "keybinds": ["DIK_4 opens bait car dialog"]
+    },
+    "locations_markers": [],
+    "economy_law": {
+      "costs": [{"type": "item", "amount": 60000, "currency": "$"}],
+      "payouts": [],
+      "illegality": "legal",
+      "penalties": []
+    },
+    "persistence": {
+      "scope": "missionNamespace",
+      "entities": ["vehicles.BaitKit*", "players.inventory"],
+      "save_points": ["onInstallBaitKit", "onVehicleCleanup"]
+    },
+    "networking": {
+      "locality": "client",
+      "remoteExec": ["RISE_fnc_engineOff", "SVR_saveInventory"]
+    },
+    "dependencies": ["bait item", "bait_car_dialog"],
+    "config_knobs": [],
+    "strings": [],
+    "code_refs": [
+      {"path": "RiseTakiLife.takistan/core/functions/baitcar/fn_installBaitCar.sqf", "lines": "L1-L144", "sha": "25be7f6", "reason": "Install flow, event handlers, and marker tracking"},
+      {"path": "RiseTakiLife.takistan/core/functions/baitcar/fn_refreshBaitCarDialog.sqf", "lines": "L1-L68", "sha": "25be7f6", "reason": "Dialog controls and button wiring"},
+      {"path": "RiseTakiLife.takistan/core/functions/keyhandler/fn_onKeyPress.sqf", "lines": "L460-L480", "sha": "25be7f6", "reason": "Keybinding gating bait car dialog to police"}
+    ],
+    "test_steps": ["Buy a Bait Car Kit from the SRT supply shop", "Sit in a police vehicle and press '4'", "Install the kit and observe the tracker marker", "Have another player enter the vehicle and activate the immobiliser", "Verify the engine is forced off"],
+    "confidence": 0.7
   }
 ]
