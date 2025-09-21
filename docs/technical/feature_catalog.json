@@ -92,10 +92,10 @@
     "name": "Harvest Marijuana Plants",
     "category": "economy",
     "roles": ["civilian", "rebel"],
-    "summary": "Illegally harvest marijuana plants from drug fields for processing into high-value narcotics.",
+    "summary": "Illegally harvest marijuana plants from drug fields using a hoe or sickle for processing into high-value narcotics.",
     "how_to_access": {
       "triggers": ["Hold Action: 'Harvest Marijuana'"],
-      "preconditions": ["NOT:isCop", "NOT:isOpf", "NOT:isEsu", "near:drug_field_marijuana"]
+      "preconditions": ["NOT:isCop", "NOT:isOpf", "NOT:isEsu", "near:drug_field_marijuana", "item:hoe OR item:sickle"]
     },
     "controls_ui": {
       "dialogs": [],
@@ -104,7 +104,7 @@
     },
     "locations_markers": ["drug_field_marijuana"],
     "economy_law": {
-      "costs": [],
+      "costs": [{"type": "tool", "item": "hoe", "amount": 2000, "currency": "$"}, {"type": "tool", "item": "sickle", "amount": 7000, "currency": "$"}],
       "payouts": [{"activity": "sell unprocessed marijuana", "amount": 80}],
       "illegality": "illegal",
       "penalties": ["wanted:drug_trafficking", "jail:20", "fine:750000"]
@@ -118,16 +118,17 @@
       "locality": "client",
       "remoteExec": []
     },
-    "dependencies": ["base game"],
+    "dependencies": ["base game", "hoe", "sickle", "rise_fnc_getNearestResource"],
     "config_knobs": ["DRUG_HARVEST_TIME"],
     "strings": [
       {"key": "STR_HARVEST_MARIJUANA", "text": "Harvesting marijuana..."}
     ],
     "code_refs": [
       {"path": "RiseTakiLife.takistan/core/config/fn_masterarray.sqf", "lines": "L275", "sha": "33b1595", "reason": "marijuana item definition"},
-      {"path": "RiseTakiLife.takistan/core/functions/item_functions/fn_itemProcess.sqf", "lines": "L14-21", "sha": "33b1595", "reason": "drug processing restrictions"}
+      {"path": "RiseTakiLife.takistan/core/functions/item_functions/fn_itemProcess.sqf", "lines": "L14-21", "sha": "33b1595", "reason": "drug processing restrictions"},
+      {"path": "RiseTakiLife.takistan/core/config/fn_variables.sqf", "lines": "L923-L933", "sha": "25be7f6", "reason": "Resource field definitions including allowed harvest tools"}
     ],
-    "test_steps": ["Play as civilian/rebel", "Go to drug field", "Harvest marijuana", "Check inventory"],
+    "test_steps": ["Play as civilian/rebel and buy a hoe or sickle", "Go to drug field", "Harvest marijuana", "Check inventory"],
     "confidence": 0.90
   },
   {
